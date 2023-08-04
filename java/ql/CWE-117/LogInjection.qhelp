@@ -1,0 +1,61 @@
+<!DOCTYPE qhelp SYSTEM "qhelp.dtd">
+<qhelp>
+<overview>
+<p>
+    If user input is written to a log entry without prior encoding of that data into a 
+    limited safe set of ASCII characters, such as Base64- or URL- encoding, a malicious 
+    user providing specially-crafted input may be able to forge fake or malicious log entries.
+</p>
+<p>
+    A log injection vulnerability occurs when an application writes user-supplied data to a log without 
+    proper security controls, allowing an attacker to manipulate the log entries or downstream applications 
+    processing those log entries. By injecting specific characters or sequences, such as newline characters, 
+    an attacker can forge log entries, confusing log readers, undermining forensics, and potentially bypassing 
+    security mechanisms.
+</p>
+</overview>
+
+<recommendation>
+<p>
+    User input should be sanitized before being written to a log entry in a way that is 
+    reversible and that prevents downstream injection vulnerabilities. Remediating log injection 
+    vulnerabilities as described above requires encoding input data using encodings that contain 
+    only a safe subset of printable US-ASCII characters, such as Base64- and URL-encoding.
+</p>
+<p>
+    As the character sets of both Base64- and URL-encoding exclude sets of special characters, sanitizing user-input 
+    using either of these encodings will remediate log injection vulnerabilities that new-line and 
+    ANSI control sequence sanitization alone will not, particularly if the log is processed by a downstream application 
+    that expects structured data in a specific format containing those special characters, such as YAML or JSON.
+</p>
+<p>
+    Alternatively, an application should use a logging framework configured to sanitize user input and encode 
+    log entries into a structured and sanitized format, such as but not limited to JSON or XML. Logging frameworks,
+    such as log4j and logback, support specification of custom encoding implementations via their configurations.
+</p>
+</recommendation>
+
+<example>
+  <p>In the first example, a username, provided by the user, is logged using <code>logger.warn</code> (from  <code>org.slf4j.Logger</code>). 
+    In the first case (<code>/bad</code> endpoint), the username is logged without any sanitization.
+    If a malicious user provides <code>Guest'%0AUser:'Admin</code> as a username parameter, 
+    the log entry will be split into two separate lines, where the first line will be <code>User:'Guest'</code> and the second one will be <code>User:'Admin'</code>.
+</p>
+<sample src="LogInjectionBad.java" />
+
+<p> In the second example (<code>/baddataloss</code> endpoint), <code>replaceAll()</code> is used to remove any non-alphanumeric characters from the user-input.
+  If a malicious user provides `Guest'%0AUser:'Admin` as a username parameter, traces of the malicious injection attempt will be silently ignored and 
+  the log message will be logged as `GuestUserAdmin` due to aggressive removal of non alpha-numeric characters. </p>
+<sample src="LogInjectionBadDataLoss.java" />
+
+<p> In the third example (<code>/good</code> endpoint), <code>URLEncode.encode()</code> is used to encode the user-input.
+  If a malicious user provides `Guest'%0AUser:'Admin` as a username parameter, the log message will be logged as `Guest%27%0AUser%3A%27Admin`,
+  thus safely logging the message while preserving the original data in a reversible encoded format.</p>
+<sample src="LogInjectionGood.java" />
+</example>
+
+<references>
+<li>OWASP: <a href="https://owasp.org/www-community/attacks/Log_Injection">Log Injection</a>.</li>
+<li>Klebanov, Vladimir: <a href="https://www.linkedin.com/pulse/log-injection-vulnerabilities-how-fix-vladimir-klebanov">Log Injection Vulnerabilities: How (Not) to Fix</a>.</li>
+</references>
+</qhelp>
