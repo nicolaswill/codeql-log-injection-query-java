@@ -64,11 +64,11 @@ class CFStructuredLoggingSink extends DataFlow::Node {
       (
         ma.getMethod().getDeclaringType().getQualifiedName() =
           ["org.sl4j.Logger", "org.apache.logging.log4j"] and
-        exists(Log4J2Logger logger | not logger.getAppender().isUnsafe(_))
+        exists(Log4J2Logger logger | not logger.getAppender().getReferencedAppender*().isUnsafe(_))
         or
         // logback sinks not defined in models-as-data but slf4j should cover most cases
         ma.getMethod().getDeclaringType().getQualifiedName() = ["org.slf4j.Logger"] and
-        exists(LogbackLogger logger | not logger.getAppender().isUnsafe(_))
+        exists(LogbackLogger logger | not logger.getAppender().getReferencedAppender*().isUnsafe(_))
       )
     )
   }
