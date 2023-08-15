@@ -1,7 +1,7 @@
 /**
  * @name Log Injection from non-encoded string
  * @description Building log entries from non-encoded data may allow
- *              insertion of forged log entries by malicious users.
+ *              injection of forged or malicious log entries by users.
  * @kind path-problem
  * @problem.severity error
  * @security-severity 7.8
@@ -15,8 +15,8 @@ import java
 import semmle.code.java.dataflow.FlowSources
 import semmle.code.java.dataflow.TaintTracking
 import semmle.code.java.security.LogInjection
-import semmle.code.configfiles.ConfigFiles
 import DataFlow::PathGraph
+import LogInjectionConfigFiles
 
 abstract private class LogInjectionSanitizerNode extends DataFlow::Node { }
 
@@ -51,60 +51,9 @@ class URLEncodeLogInjectionSanitizer extends LogInjectionSanitizerNode {
 }
 
 /**
- * Returns the value of the `packages` attribute of a `log4j2.xml` config file.
- *
- * Example `log4j2.xml` config file:
- * ```
- *  <?xml version="1.0" encoding="UTF-8"?>
- *  <Configuration status="warn" strict="true"
- *  packages="com.sap.hcp.cf.log4j2.converter,com.sap.hcp.cf.log4j2.layout">
- *  ...
- *  ```
- *
- * For the above example config, this method returns `"com.sap.hcp.cf.log4j2.converter,com.sap.hcp.cf.log4j2.layout"`.
- */
-string getLog4j2ConfigPackages() {
-  exists(XmlFile config |
-    config.getBaseName() = "log4j2.xml" and
-    result = config.getAChild("Configuration").getAttribute("packages").getValue()
-  )
-}
-
-/**
- * Returns the value of the `class` attribute of an `appender` element of a `logback.xml` config file.
- *
- * Example `logback.xml` config file:
- * ```
- * <?xml version="1.0" encoding="UTF-8"?>
- * <!DOCTYPE xml>
- * <configuration debug="false" scan="false">
- *    <turboFilter class="com.sap.hcp.cf.logback.filter.CustomLoggingTurboFilter" />
- *    <!-- write logs to console -->
- *    <appender name="STDOUT-JSON" class="ch.qos.logback.core.ConsoleAppender">
- *        <!-- encode and enrich full message with the required fields/tags -->
- *        <encoder class="com.sap.hcp.cf.logback.encoder.JsonEncoder" />
- *  ...
- *  ```
- *
- * For the above example config, this method returns `"com.sap.hcp.cf.logback.encoder.JsonEncoder"`.
- */
-string getLogbackEncoderConfig() {
-  exists(XmlFile config |
-    config.getBaseName() = "logback.xml" and
-    result =
-      config
-          .getAChild("configuration")
-          .getAChild("appender")
-          .getAChild("encoder")
-          .getAttribute("class")
-          .getValue()
-  )
-}
-
-/**
- * A logging call that is defined to perform structured logging with
+ * A logging method access that is defined to perform structured logging with
  * Java Logging Support for Cloud Foundry (https://github.com/SAP/cf-java-logging-support).
- * Note: `cf-java-logging-support` is one of many libraries that provide structured logging,
+ * Note: `cf-java-logging-support` is one of many libraries that provide structured logging
  * but is the only library currently modeled by this query. This query should be extended.
  */
 class CFStructuredLoggingSink extends DataFlow::Node {
@@ -115,11 +64,11 @@ class CFStructuredLoggingSink extends DataFlow::Node {
       (
         ma.getMethod().getDeclaringType().getQualifiedName() =
           ["org.sl4j.Logger", "org.apache.logging.log4j"] and
-        getLog4j2ConfigPackages().matches("%com.sap.hcp.cf.log4j2.layout%")
+        exists(Log4J2Logger logger | not logger.getAppender().isUnsafe(_))
         or
         // logback sinks not defined in models-as-data but slf4j should cover most cases
         ma.getMethod().getDeclaringType().getQualifiedName() = ["org.slf4j.Logger"] and
-        getLogbackEncoderConfig().matches("%com.sap.hcp.cf.logback.encoder.%")
+        exists(LogbackLogger logger | not logger.getAppender().isUnsafe(_))
       )
     )
   }
