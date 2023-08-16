@@ -51,10 +51,7 @@ class URLEncodeLogInjectionSanitizer extends LogInjectionSanitizerNode {
 }
 
 /**
- * A logging method access that is defined to perform structured logging with
- * Java Logging Support for Cloud Foundry (https://github.com/SAP/cf-java-logging-support).
- * Note: `cf-java-logging-support` is one of many libraries that provide structured logging
- * but is the only library currently modeled by this query. This query should be extended.
+ * A logging method access that is defined to perform structured logging.
  */
 class CFStructuredLoggingSink extends DataFlow::Node {
   CFStructuredLoggingSink() {
