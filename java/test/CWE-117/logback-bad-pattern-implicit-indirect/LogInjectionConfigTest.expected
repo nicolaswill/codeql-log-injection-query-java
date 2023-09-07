@@ -1,0 +1,1 @@
+| logback.xml:20:3:22:10 | root | Logger $@ uses appender $@, which is vulnerable to log injection because the appender uses the pattern layout encoder. | logback.xml:20:3:22:10 | root | root | logback.xml:16:3:18:14 | appender | ASYNC |

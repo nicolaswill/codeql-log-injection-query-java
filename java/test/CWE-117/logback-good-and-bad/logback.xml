@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE xml>
+<configuration debug="false" scan="false">
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender"></appender>
+    <appender name="STDOUT-JSON" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder class="com.sap.hcp.cf.logback.encoder.JsonEncoder" />
+    </appender>
+    <root level="${LOG_ROOT_LEVEL:-INFO}">
+        <appender-ref ref="STDOUT-JSON" />
+        <appender-ref ref="STDOUT" />
+    </root>
+</configuration>

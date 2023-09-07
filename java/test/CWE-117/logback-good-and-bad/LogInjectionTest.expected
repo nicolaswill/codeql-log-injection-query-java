@@ -1,0 +1,8 @@
+edges
+| LogInjectionTest.java:16:23:16:94 | username : String | LogInjectionTest.java:17:31:17:38 | username |
+nodes
+| LogInjectionTest.java:16:23:16:94 | username : String | semmle.label | username : String |
+| LogInjectionTest.java:17:31:17:38 | username | semmle.label | username |
+subpaths
+#select
+| LogInjectionTest.java:17:31:17:38 | username | LogInjectionTest.java:16:23:16:94 | username : String | LogInjectionTest.java:17:31:17:38 | username | This log entry depends on a $@. | LogInjectionTest.java:16:23:16:94 | username | user-provided value |

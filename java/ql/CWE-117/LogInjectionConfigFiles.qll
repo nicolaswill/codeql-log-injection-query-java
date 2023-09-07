@@ -23,7 +23,7 @@ abstract class LoggerConfigAppenderElement extends XmlElement {
   abstract string getAppenderName();
 
   /** Gets the referenced appender if this appender has a reference to another appender (e.g. `AsyncAppender`). */
-  LoggerConfigAppenderElement getReferencedAppender() { none() }
+  LoggerConfigAppenderElement getReferencedAppender() { result = this }
 }
 
 /**
@@ -65,10 +65,10 @@ class LogbackConfigFile extends LoggerConfigFile {
 /** Holds if the given log4j2 `pattern` layout is unsafe and binds `reason` to a description of why it is unsafe. */
 bindingset[pattern]
 predicate isUnsafeLog4j2PatternLayout(string pattern, string reason) {
-  pattern.regexpMatch(".*(?<!%enc\\{)%(?:m|msg|message).*") and
+  pattern.regexpMatch(".*(?<!%enc\\{)%(?:m|msg|message)\\b.*") and
   reason = "the pattern does not contain a message encoding"
   or
-  pattern.regexpMatch(".*%enc\\{%(?:m|msg|message)\\}\\{CLRF\\}.*") and
+  pattern.regexpMatch(".*%enc\\{%(?:m|msg|message)\\}\\{CRLF\\}.*") and
   reason = "the pattern contains only CRLF message encoding"
 }
 
