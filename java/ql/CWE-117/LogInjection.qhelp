@@ -2,36 +2,35 @@
 <qhelp>
 <overview>
 <p>
-    If user input is written to a log entry without prior encoding of that data into a 
-    limited safe set of ASCII characters, such as Base64- or URL- encoding, a malicious 
-    user providing specially-crafted input may be able to forge fake or malicious log entries.
+    If user input is written to a log without prior encoding of that data into a limited
+    safe set of characters, a malicious user providing specially-crafted input may be able 
+    to inject fake or malicious log entries.
 </p>
 <p>
     A log injection vulnerability occurs when an application writes user-supplied data to a log without 
-    proper security controls, allowing an attacker to manipulate the log entries or downstream applications 
-    processing those log entries. By injecting specific characters or sequences, such as newline characters, 
-    an attacker can forge log entries, confusing log readers, undermining forensics, and potentially bypassing 
-    security mechanisms.
+    proper security controls. By injecting specific characters or sequences of characters,
+    an attacker can inject malicious log entries that may confuse log readers, undermine forensics, and 
+    potentially bypass logging-related security mechanisms.
 </p>
 </overview>
 
 <recommendation>
 <p>
     User input should be sanitized before being written to a log entry in a way that is 
-    reversible and that prevents downstream injection vulnerabilities. Remediating log injection 
-    vulnerabilities as described above requires encoding input data using encodings that contain 
-    only a safe subset of printable US-ASCII characters, such as Base64- and URL-encoding.
+    reversible and that prevents downstream injection vulnerabilities. Preventing log injection 
+    vulnerabilities as described above requires encoding input data into a safe subset of 
+    printable US-ASCII characters. A good choice of encoding is URL-encoding, as it encodes
+    various classes of potentially problematic characters.
 </p>
 <p>
-    As the character sets of both Base64- and URL-encoding exclude sets of special characters, sanitizing user-input 
-    using either of these encodings will remediate log injection vulnerabilities that new-line and 
-    ANSI control sequence sanitization alone will not, particularly if the log is processed by a downstream application 
-    that expects structured data in a specific format containing those special characters, such as YAML or JSON.
+    As URL-encoding excludes sets of special characters, encoding user-input with it prevents log injection
+    that new-line and ANSI control sequence sanitization alone will not. URL-encoding also preserves
+    the original data in a reversible format, which is useful for forensics and debugging.
 </p>
 <p>
     Alternatively, an application should use a logging framework configured to sanitize user input and encode 
-    log entries into a structured and sanitized format, such as but not limited to JSON or XML. Logging frameworks,
-    such as log4j and logback, support specification of custom encoding implementations via their configurations.
+    log entries into a structured format, such as but not limited to JSON or XML. Logging frameworks, such
+    as log4j and logback, support specification of custom encoding implementations via their configuration files.
 </p>
 </recommendation>
 

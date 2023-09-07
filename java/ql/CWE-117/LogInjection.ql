@@ -51,10 +51,7 @@ class URLEncodeLogInjectionSanitizer extends LogInjectionSanitizerNode {
 }
 
 /**
- * A logging method access that is defined to perform structured logging with
- * Java Logging Support for Cloud Foundry (https://github.com/SAP/cf-java-logging-support).
- * Note: `cf-java-logging-support` is one of many libraries that provide structured logging
- * but is the only library currently modeled by this query. This query should be extended.
+ * A logging method access that is defined to perform structured logging.
  */
 class CFStructuredLoggingSink extends DataFlow::Node {
   CFStructuredLoggingSink() {
@@ -63,7 +60,7 @@ class CFStructuredLoggingSink extends DataFlow::Node {
       ma.getAnArgument() = this.asExpr() and
       (
         ma.getMethod().getDeclaringType().getQualifiedName() =
-          ["org.sl4j.Logger", "org.apache.logging.log4j"] and
+          ["org.slf4j.Logger", "org.apache.logging.log4j"] and
         exists(Log4J2Logger logger | not logger.getAppender().getReferencedAppender*().isUnsafe(_))
         or
         // logback sinks not defined in models-as-data but slf4j should cover most cases

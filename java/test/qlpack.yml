@@ -1,0 +1,8 @@
+---
+library: false
+name: advanced-security/log-injection-java-test
+version: 0.0.1
+extractor: java
+dependencies:
+  advanced-security/log-injection-java: "*"
+tests: .
