@@ -1,0 +1,17 @@
+# editor and OS artifacts
+*~
+.DS_STORE
+*.swp
+
+# query compilation caches
+.cache
+
+# qlpack lockfile
+codeql-pack.lock.yml
+
+# qltest projects and artifacts
+*.testproj
+*.actual
+
+# CodeQL build artifacts
+**/.codeql/**

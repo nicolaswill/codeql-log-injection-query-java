@@ -1,0 +1,1 @@
+| log4j2.xml:10:9:12:16 | Root | Logger $@ uses appender $@, which is vulnerable to log injection because the pattern contains only CRLF message encoding. | log4j2.xml:10:9:12:16 | Root | Root | log4j2.xml:5:9:7:19 | Console | STDOUT |

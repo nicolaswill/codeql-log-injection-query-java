@@ -1,5 +1,5 @@
 {
     "provide": [
-        "*/*/qlpack.yml"
+        "**/qlpack.yml"
     ]
 }
