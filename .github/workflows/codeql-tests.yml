@@ -1,0 +1,42 @@
+name: "CodeQL Tests"
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    # The branches below must be a subset of the branches above
+    branches: [ "main" ]
+  schedule:
+    - cron: '39 12 * * 2'
+    
+env:
+  LGTM_INDEX_XML_MODE: all
+
+jobs:
+  analyze:
+    name: Test
+    runs-on: 'ubuntu-latest'
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    # Initializes the CodeQL tools for scanning.
+    - name: Initialize CodeQL
+      id: init
+      uses: github/codeql-action/init@v2
+      with:
+        languages: java
+
+    - name: Run CodeQL Tests
+      env:
+        CODEQL_PATH: ${{ steps.init.outputs.codeql-path }}
+      run: |
+        $CODEQL_PATH test run --strict-test-discovery --no-show-extractor-output --format=json --threads=0 --verbosity=errors ./java/test |
+        jq -r '.|sort_by(.pass)|.[]|"\(if .pass then "✅" else "❌" end) \(.test / "/test/" | .[1])  "' >> results.md
+        cat results.md >> $GITHUB_STEP_SUMMARY
+        if grep -n "❌" results.md; then exit 1; fi
