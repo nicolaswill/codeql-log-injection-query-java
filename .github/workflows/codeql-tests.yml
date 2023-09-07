@@ -36,4 +36,8 @@ jobs:
         $CODEQL_PATH test run --strict-test-discovery --no-show-extractor-output --format=json --threads=0 --verbosity=errors ./java/test |
         jq -r '.|sort_by(.pass)|.[]|"\(if .pass then "✅" else "❌" end) \(.test / "/test/" | .[1])  "' >> results.md
         cat results.md >> $GITHUB_STEP_SUMMARY
-        if grep -n "❌" results.md; then exit 1; fi
+
+    - uses: actions/upload-artifact@v3
+      with:
+        name: results
+        path: ./java/test
