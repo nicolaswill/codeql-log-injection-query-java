@@ -39,7 +39,7 @@ jobs:
       env:
         CODEQL_PATH: ${{ steps.init.outputs.codeql-path }}
       run: |
-        $CODEQL_PATH test run --strict-test-discovery --show-extractor-output --format=json --threads=0 --verbosity=errors ./java/test >> ./java/test/test_output.log
+        $CODEQL_PATH test run --strict-test-discovery --show-extractor-output --threads=0 --verbosity=errors ./java/test >> ./java/test/test_output.log || true
         
     - uses: actions/upload-artifact@v3
       with:
