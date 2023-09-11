@@ -40,8 +40,8 @@ jobs:
         CODEQL_PATH: ${{ steps.init.outputs.codeql-path }}
       run: |
         $CODEQL_PATH test run --strict-test-discovery --show-extractor-output --format=json --threads=0 --verbosity=errors ./java/test |
-        jq -r '.|sort_by(.pass)|.[]|"\(if .pass then "✅" else "❌" end) \(.test / "/test/" | .[1])  "' >> results.md
-        cat results.md >> $GITHUB_STEP_SUMMARY
+        jq -r '.|sort_by(.pass)|.[]|"\(if .pass then "✅" else "❌" end) \(.test / "/test/" | .[1])  "' >> ./java/test/results.md
+        cat ./java/test/results.md >> $GITHUB_STEP_SUMMARY
         
     - uses: actions/upload-artifact@v3
       with:
